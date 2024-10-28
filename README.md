@@ -59,73 +59,82 @@ terraform init
 terraform apply
 
 Task 3: Deploy Kubernetes Clusters on GKE
+
     3.1 GKE Cluster Configuration (with Terraform)
 
-gke.tf
+    gke.tf
 
-resource "google_container_cluster" "gke_cluster" {
-  name     = "devops-sre-gke-cluster"
-  location = "us-central1-a"
-  network  = google_compute_network.vpc_network.id
+    resource "google_container_cluster" "gke_cluster" {
+      name     = "devops-sre-gke-cluster"
+      location = "us-central1-a"
+      network  = google_compute_network.vpc_network.id
 
-  node_config {
-    machine_type = "e2-standard-4"
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
-  }
-}
+      node_config {
+        machine_type = "e2-standard-4"
+        oauth_scopes = [
+          "https://www.googleapis.com/auth/cloud-platform",
+        ]
+      }
+    }
 
     3.2 Run Terraform
     
-terraform apply -target=google_container_cluster.gke_cluster
+    terraform apply -target=google_container_cluster.gke_cluster
 
 Task 4: Deploy and Configure HashiCorp Vault
-    4.1 Deploy Vault using Helm in Kubernetes
     
-Add Helm repository and install Vault:
-helm repo add hashicorp https://helm.releases.hashicorp.com
-helm install vault hashicorp/vault --namespace vault --create-namespace
+        4.1 Deploy Vault using Helm in Kubernetes
+    
+        Add Helm repository and install Vault:
+        helm repo add hashicorp https://helm.releases.hashicorp.com
+        helm install vault hashicorp/vault --namespace vault --create-namespace
 
-    4.2 Configure Kubernetes Authentication
-Set up Kubernetes authentication within Vault:
+        4.2 Configure Kubernetes Authentication
+        
+            Set up Kubernetes authentication within Vault:
 
-kubectl exec -it vault-0 -- vault auth enable kubernetes
-kubectl exec -it vault-0 -- vault write auth/kubernetes/config \
-    token_reviewer_jwt="$(kubectl get secret vault-token -o go-template='{{ .data.token }}' | base64 --decode)" \
-    kubernetes_host="https://<KUBERNETES_API_SERVER>"
+            kubectl exec -it vault-0 -- vault auth enable kubernetes
+            kubectl exec -it vault-0 -- vault write auth/kubernetes/config \
+                    token_reviewer_jwt="$(kubectl get secret vault-token -o go-template='{{ .data.token }}' | base64 --decode)" \
+                    kubernetes_host="https://<KUBERNETES_API_SERVER>"
 
 Task 5: Set Up CI/CD Pipeline with GitOps
-    5.1 Configure Git Repository for CI/CD
-Initialize a Git repository and add your Kubernetes manifests and Terraform files.
-    5.2 GitLab/GitHub Actions for CI/CD Pipeline (Example GitHub Action)
-Configure a pipeline to build and deploy Docker images:
+    
+        5.1 Configure Git Repository for CI/CD
+        
+        Initialize a Git repository and add your Kubernetes manifests and Terraform files.
+        
+        5.2 GitLab/GitHub Actions for CI/CD Pipeline (Example GitHub Action)
+        
+        Configure a pipeline to build and deploy Docker images:
 
-.github/workflows/deploy.yml
+        .github/workflows/deploy.yml
 
-name: CI/CD Pipeline
+        name: CI/CD Pipeline
 
-on:
-  push:
-    branches:
-      - main
+        on:
+          push:
+        branches:
+          - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+        jobs:
+          build:
+            runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+            steps:
+          - name: Checkout Code
+            uses: actions/checkout@v2
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+          - name: Set up Google Cloud SDK
+            uses: google-github-actions/setup-gcloud@v0
 
-      - name: Build Docker Image
-        run: docker build -t gcr.io/$PROJECT_ID/my-app .
+          - name: Build Docker Image
+            run: docker build -t gcr.io/$PROJECT_ID/my-app .
 
-      - name: Push to Artifact Registry
-        run: docker push gcr.io/$PROJECT_ID/my-app
+          - name: Push to Artifact Registry
+            run: docker push gcr.io/$PROJECT_ID/my-app
+
+
 
 Task 6: Monitoring and Logging with Prometheus and Grafana
 6.1 Deploy Prometheus and Grafana Using Helm
