@@ -151,6 +151,7 @@ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5
 1.2 Create an Ingress Resource with TLS
 Assuming you’re using a domain like example.com, configure an ingress resource for HTTPS.
 ingress.yaml
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -177,6 +178,7 @@ spec:
 
 1.3 Create a ClusterIssuer for Let’s Encrypt
 letsencrypt-issuer.yaml
+
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -198,6 +200,7 @@ kubectl apply -f letsencrypt-issuer.yaml
 Configure network policies to restrict pod communication within namespaces or by labels. Here’s an example of a restrictive policy that only allows ingress traffic from specific pods.
 
 network-policy.yaml
+
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -222,6 +225,7 @@ spec:
 To add testing and security scanning stages, update the pipeline file.
 
 .github/workflows/deploy.yml
+
 name: CI/CD Pipeline
 
 on:
@@ -267,6 +271,7 @@ Add health checks and sync waves for staged deployments in ArgoCD.
 Define ArgoCD health checks in the Kubernetes manifests to ensure readiness.
 
 deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
