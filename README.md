@@ -4,27 +4,29 @@ DevOps-SRE-Assesment
 Task 1: Set Up the GCP Project
     1.1 Create a New GCP Project
 
-gcloud projects create <PROJECT_ID> --name="DevOps-SRE-Assessment" --set-as-default
-gcloud config set project <PROJECT_ID>
+    gcloud projects create <PROJECT_ID> --name="DevOps-SRE-Assessment" --set-as-default
+    gcloud config set project <PROJECT_ID>
 
     1.2 Enable Required APIs
 
-gcloud services enable compute.googleapis.com \
+    gcloud services enable compute.googleapis.com \
     container.googleapis.com \
     cloudbuild.googleapis.com \
     artifactregistry.googleapis.com
 
     1.3 Configure IAM
-Create service accounts for Terraform, GKE, and CI/CD pipelines.
+    
+    Create service accounts for Terraform, GKE, and CI/CD pipelines.
 
-gcloud iam service-accounts create terraform --display-name="Terraform Service Account"
-gcloud iam service-accounts create gke-sa --display-name="GKE Service Account"
-gcloud iam service-accounts create cicd --display-name="CI/CD Service Account"
+    gcloud iam service-accounts create terraform --display-name="Terraform Service Account"
+    gcloud iam service-accounts create gke-sa --display-name="GKE Service Account"
+    gcloud iam service-accounts create cicd --display-name="CI/CD Service Account"
 
 Task 2: Configure VPC Networking
-2.1 Create a Custom VPC using Terraform
 
-vpc.tf
+    2.1 Create a Custom VPC using Terraform
+
+    vpc.tf
 
 resource "google_compute_network" "vpc_network" {
   name = "devops-sre-vpc"
