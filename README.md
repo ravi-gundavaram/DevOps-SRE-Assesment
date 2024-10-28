@@ -28,7 +28,7 @@ Task 2: Configure VPC Networking
 
     vpc.tf
 
-resource "google_compute_network" "vpc_network" {
+    resource "google_compute_network" "vpc_network" {
   name = "devops-sre-vpc"
 }
 
@@ -50,6 +50,8 @@ resource "google_compute_firewall" "allow_internal" {
 
   source_ranges = ["10.0.0.0/16"]
 }
+
+
 
 2.2 Initialize and Apply Terraform
 
