@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,5 +19,19 @@ jobs:
       - name: Build Docker Image
         run: docker build -t gcr.io/$PROJECT_ID/my-app .
 
+      - name: Run Tests
+        run: |
+          docker run --rm gcr.io/$PROJECT_ID/my-app pytest tests/
+      
+      - name: Security Scan
+        uses: aquasecurity/trivy-action@v0.0.5
+        with:
+          image-ref: gcr.io/$PROJECT_ID/my-app
+
       - name: Push to Artifact Registry
         run: docker push gcr.io/$PROJECT_ID/my-app
+
+      - name: Deploy to GKE
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
